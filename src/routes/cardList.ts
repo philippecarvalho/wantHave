@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
-import { getCardsFromScryfall } from '../controllers/cardList';
+import { createCardList } from '../controllers/cardList';
 
 const route = Router();
 
 route.post('/', async (req, res) => {
-  const cardList = await getCardsFromScryfall(req.body);
+  const cardList = await createCardList(req.body);
   res.send(cardList);
 });
 

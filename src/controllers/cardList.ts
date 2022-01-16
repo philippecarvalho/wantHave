@@ -15,30 +15,34 @@ const getQuantity = (cardName, reqBod) => {
   return cardItem.quantity;
 };
 
-export const getCardsFromScryfall = async (reqBody: ReqBody) => {
-  const scryFallResponse = await axios({
-    method: 'POST',
-    url: 'https://api.scryfall.com/cards/collection',
-    data: {
-      identifiers: reqBody.cards,
-    },
-  });
+export const createCardList = async (reqBody: ReqBody) => {
+  const getCardsFromScryfall = async () => {
+    const scryFallResponse = await axios({
+      method: 'POST',
+      url: 'https://api.scryfall.com/cards/collection',
+      data: {
+        identifiers: reqBody.cards,
+      },
+    });
 
-  const cards = [];
+    const cards = [];
 
-  scryFallResponse.data.data.forEach((card) => {
-    const cardObj = {
-      cardTitle: card.name,
-      imageURI: card.image_uris.normal,
-      quantity: getQuantity(card.name, reqBody.cards),
-    };
-    cards.push(cardObj);
-  });
+    scryFallResponse.data.data.forEach((card) => {
+      const cardObj = {
+        cardTitle: card.name,
+        imageURI: card.image_uris.normal,
+        quantity: getQuantity(card.name, reqBody.cards),
+      };
+      cards.push(cardObj);
+    });
+
+    return cards;
+  };
 
   const cardList = new CardModel({
     listTitle: reqBody.listTitle,
     user: reqBody.userId,
-    cards: cards,
+    cards: await getCardsFromScryfall(),
   });
 
   return await cardList
